@@ -13,20 +13,32 @@ async function getWeatherData(){
     }
 }
 
-function getLocationData() {
+function getLocationData(callback) {
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            console.log(latitude)
-            console.log(longitude)
+            console.log(position);
+            callback(position)
         })
     } else {
-        console.log('no geolocation data found')
+        console.log('no geolocation data found');
+    }
+}
+
+async function getPoints(position){
+    try {
+        const latitude = position.coords.latitude
+        const longitude = position.coords.longitude
+        const weatherPointHome = await fetch('https://api.weather.gov/points/' + latitude + ',' + longitude, {headers :{
+            'User-Agent' : '(myweatherapp.com, contact@myweatherapp.com)'
+        }});
+        console.log(weatherPointHome.forecast)
+    }
+    catch(error) {
+        console.log(error)
     }
 }
 
 const button = document.getElementById('button');
 button.addEventListener('click', function() {
-    getLocationData();
+    getLocationData(getPoints);
 })
