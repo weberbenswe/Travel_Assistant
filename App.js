@@ -16,14 +16,19 @@ async function getWeatherData(){
 }
 
 function getLocationData(callback) {
-    if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(function(position) {
-            console.log(position);
-            callback(position)
-        })
-    } else {
-        console.log('no geolocation data found');
-    }
+    return new Promise((resolve, reject) => {
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(async function(position) {
+                console.log(position);
+                const result = await callback(position)
+                resolve(result)
+            })
+        } else {
+            console.log('no geolocation data found');
+            reject('no geolocation data found')
+        }
+
+    })
 }
 
 async function getPoints(position){
@@ -35,14 +40,23 @@ async function getPoints(position){
                 'User-Agent' : '(myweatherapp.com, contact@myweatherapp.com)'
         }});
         const data = await response.json()
-        console.log(data.properties.forecast)
+        const point = data.properties.forecast
+        return point
     }
     catch(error) {
         console.log(error)
     }
 }
 
+async function main() {
+    let point;
+    await getLocationData(async function(position) {
+        point = await getPoints(position)
+    })
+    console.log(point)
+}
+
 const button = document.getElementById('button');
 button.addEventListener('click', function() {
-    getLocationData(getPoints);
+    main()
 })
