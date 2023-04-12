@@ -3,10 +3,10 @@
 */
 const fetchPoints = 'https://api.weather.gov/points/'
 
-async function getWeatherData(){
+async function getWeatherData(point){
     return new Promise(async (resolve, reject) => {
         try {
-            const weatherData = await fetch('https://api.weather.gov/', {headers :{
+            const weatherData = await fetch( point, {headers :{
                 'User-Agent': '(myweatherapp.com, contact@myweatherapp.com)'
             }});
             console.log(weatherData);
@@ -54,11 +54,15 @@ async function getPoints(position){
 
 async function main() {
     let point;
+    let weather;
     await getLocationData(async function(position) {
         point = await getPoints(position)
     })
-    await getWeatherData()
+    const response = await getWeatherData(point)
+    weather = await response.json()
     console.log(point)
+    console.log('weather')
+    console.log(weather)
 }
 
 const button = document.getElementById('button');
