@@ -4,15 +4,19 @@
 const fetchPoints = 'https://api.weather.gov/points/'
 
 async function getWeatherData(){
-    try {
-        const weatherData = await fetch('https://api.weather.gov/', {headers :{
-            'User-Agent': '(myweatherapp.com, contact@myweatherapp.com)'
-    }});
-        console.log(weatherData);
-    }
-    catch(error){
-        console.log(error);
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const weatherData = await fetch('https://api.weather.gov/', {headers :{
+                'User-Agent': '(myweatherapp.com, contact@myweatherapp.com)'
+            }});
+            console.log(weatherData);
+            resolve(weatherData);
+        }
+        catch(error){
+            console.log(error);
+            reject(error);
+        }
+    })
 }
 
 function getLocationData(callback) {
@@ -53,6 +57,7 @@ async function main() {
     await getLocationData(async function(position) {
         point = await getPoints(position)
     })
+    await getWeatherData()
     console.log(point)
 }
 
