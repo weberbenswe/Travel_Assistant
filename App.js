@@ -80,14 +80,14 @@ function main(todaysInfo){
 
     document.querySelector('p:nth-of-type(1)').innerHTML = 'Skies: ' + weatherData[0].Skies;
     document.querySelector('p:nth-of-type(2)').innerHTML = 'High Temperature: ' + weatherData[0].Temperature;
-    
+
+    return weatherData
 }
 
-const button = document.getElementById('button');
-button.addEventListener('click', async function() {
+window.onload = async function(){
     const todaysInfo = await todaysForecast()
     console.log('todaysInfo')
     console.log(todaysInfo)
     const today = main(todaysInfo)
     console.log(today)
-})
+}
