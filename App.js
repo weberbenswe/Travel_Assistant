@@ -3,6 +3,7 @@
 */
 const weatherPoints = 'https://api.weather.gov/'
 const userAgent = '(myweatherapp.com, contact@myweatherapp.com)'
+let weatherData = {}
 
 async function getWeatherData(localData){
     console.log('localData')
@@ -50,10 +51,6 @@ async function getPoints(position){
         console.log(error)
     }
 }
-
-
-// try and use gridpoints to get temp data
-
 async function todaysForecast() {
     let localData;
     let weather;
@@ -61,6 +58,7 @@ async function todaysForecast() {
     await getLocationData(async function(position) {
         localData = await getPoints(position)
     })
+    weatherData.location = localData.properties.relativeLocation.properties.city
 
     const response = await getWeatherData(localData)
     weather = await response.json()
@@ -76,18 +74,18 @@ async function todaysForecast() {
 function main(todaysInfo){
     const skies = todaysInfo.shortForecast
     const temp = todaysInfo.temperature
-    const weatherData = [{'Skies' : skies, 'Temperature' : temp}]
+    weatherData.Skies = skies
+    weatherData.Temperature = temp
 
-    document.querySelector('p:nth-of-type(1)').innerHTML = 'Skies: ' + weatherData[0].Skies;
-    document.querySelector('p:nth-of-type(2)').innerHTML = 'High Temperature: ' + weatherData[0].Temperature;
+    document.querySelector('p:nth-of-type(1)').innerHTML = 'Skies: ' + weatherData.Skies;
+    document.querySelector('p:nth-of-type(2)').innerHTML = 'High Temperature: ' + weatherData.Temperature;
 
     return weatherData
 }
 
 window.onload = async function(){
     const todaysInfo = await todaysForecast()
-    console.log('todaysInfo')
-    console.log(todaysInfo)
     const today = main(todaysInfo)
+    console.log('weather Info')
     console.log(today)
 }
