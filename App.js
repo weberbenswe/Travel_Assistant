@@ -1,15 +1,15 @@
 /*
     Pull weather data
 */
-const fetchPoints = 'https://api.weather.gov/points/'
+const weatherPoints = 'https://api.weather.gov/points/'
+const userAgent = '(myweatherapp.com, contact@myweatherapp.com)'
 
 async function getWeatherData(point){
     return new Promise(async (resolve, reject) => {
         try {
             const weatherData = await fetch(point, {headers :{
-                'User-Agent': '(myweatherapp.com, contact@myweatherapp.com)'
+                'User-Agent': userAgent
             }});
-            console.log(weatherData);
             resolve(weatherData);
         }
         catch(error){
@@ -23,7 +23,6 @@ function getLocationData(callback) {
     return new Promise((resolve, reject) => {
         if(navigator.geolocation){
             navigator.geolocation.getCurrentPosition(async function(position) {
-                console.log(position);
                 const result = await callback(position)
                 resolve(result)
             })
@@ -39,12 +38,14 @@ async function getPoints(position){
     try {
         const latitude = position.coords.latitude
         const longitude = position.coords.longitude
-        const response = await fetch(fetchPoints + latitude + ',' + longitude, {
+        const response = await fetch(weatherPoints + latitude + ',' + longitude, {
             headers :{
-                'User-Agent' : '(myweatherapp.com, contact@myweatherapp.com)'
+                'User-Agent' : userAgent
         }});
         const data = await response.json()
         const point = data.properties.forecast
+        console.log('location')
+        console.log(data.geometry.coordinates)
         return point
     }
     catch(error) {
@@ -52,22 +53,35 @@ async function getPoints(position){
     }
 }
 
-async function main() {
+async function todaysForecast() {
     let point;
     let weather;
+
     await getLocationData(async function(position) {
         point = await getPoints(position)
     })
-    console.log('point')
-    console.log(point)
+
     const response = await getWeatherData(point)
     weather = await response.json()
-    console.log(point)
+    if(!weather){
+        return console.log('Weather could not be obtained for this location')
+    }
     console.log('weather')
     console.log(weather)
+    const today = weather.properties.periods[0]
+    return today
+}
+
+function main(todaysInfo){
+    const skies = todaysInfo.shortForecast
+    const temp = todaysInfo.temperature
+    console.log(todaysInfo)
+    console.log(skies)
+    console.log(temp)
 }
 
 const button = document.getElementById('button');
-button.addEventListener('click', function() {
-    main()
+button.addEventListener('click', async function() {
+    const todaysInfo = await todaysForecast()
+    main(todaysInfo)
 })
