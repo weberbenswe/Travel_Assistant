@@ -79,6 +79,7 @@ function main(todaysInfo){
 
     document.querySelector('p:nth-of-type(1)').innerHTML = 'Skies: ' + weatherData.Skies;
     document.querySelector('p:nth-of-type(2)').innerHTML = 'High Temperature: ' + weatherData.Temperature;
+    document.querySelector('p:nth-of-type(3)').innerHTML = 'Location: ' + weatherData.location;
 
     return weatherData
 }
