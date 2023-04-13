@@ -37,6 +37,7 @@ function getLocationData(callback) {
 }
 
 async function getPoints(position){
+    console.log(position)
     try {
         const latitude = position.coords.latitude
         const longitude = position.coords.longitude
