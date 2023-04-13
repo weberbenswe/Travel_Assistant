@@ -55,14 +55,14 @@ async function getPoints(position){
 // try and use gridpoints to get temp data
 
 async function todaysForecast() {
-    let data;
+    let localData;
     let weather;
 
     await getLocationData(async function(position) {
-        data = await getPoints(position)
+        localData = await getPoints(position)
     })
 
-    const response = await getWeatherData(data)
+    const response = await getWeatherData(localData)
     weather = await response.json()
     if(!weather){
         return console.log('Weather could not be obtained for this location')
@@ -76,14 +76,18 @@ async function todaysForecast() {
 function main(todaysInfo){
     const skies = todaysInfo.shortForecast
     const temp = todaysInfo.temperature
-    console.log('todays info')
-    console.log(todaysInfo)
-    console.log(skies)
-    console.log(temp)
+    const weatherData = [{'Skies' : skies, 'Temperature' : temp}]
+
+    document.querySelector('p:nth-of-type(1)').innerHTML = 'Skies: ' + weatherData[0].Skies;
+    document.querySelector('p:nth-of-type(2)').innerHTML = 'High Temperature: ' + weatherData[0].Temperature;
+    
 }
 
 const button = document.getElementById('button');
 button.addEventListener('click', async function() {
     const todaysInfo = await todaysForecast()
-    main(todaysInfo)
+    console.log('todaysInfo')
+    console.log(todaysInfo)
+    const today = main(todaysInfo)
+    console.log(today)
 })
