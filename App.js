@@ -1,15 +1,16 @@
 /*
     Pull weather data
 */
-const weatherPoints = 'https://api.weather.gov/points/'
+const weatherPoints = 'https://api.weather.gov/'
 const userAgent = '(myweatherapp.com, contact@myweatherapp.com)'
 
-async function getWeatherData(point){
+async function getWeatherData(localData){
+    console.log('localData')
+    console.log(localData)
+    const url = weatherPoints + 'gridpoints/' + localData.properties.cwa + '/' + localData.properties.gridX + ',' + localData.properties.gridY  + '/forecast'
     return new Promise(async (resolve, reject) => {
-        try {
-            const weatherData = await fetch(point, {headers :{
-                'User-Agent': userAgent
-            }});
+        try { 
+            const weatherData = await fetch(url, { headers :{ 'User-Agent' : userAgent }});
             resolve(weatherData);
         }
         catch(error){
@@ -38,30 +39,30 @@ async function getPoints(position){
     try {
         const latitude = position.coords.latitude
         const longitude = position.coords.longitude
-        const response = await fetch(weatherPoints + latitude + ',' + longitude, {
+        const response = await fetch(weatherPoints + 'points/' + latitude + ',' + longitude, {
             headers :{
                 'User-Agent' : userAgent
         }});
         const data = await response.json()
-        const point = data.properties.forecast
-        console.log('location')
-        console.log(data.geometry.coordinates)
-        return point
+        return data
     }
     catch(error) {
         console.log(error)
     }
 }
 
+
+// try and use gridpoints to get temp data
+
 async function todaysForecast() {
-    let point;
+    let data;
     let weather;
 
     await getLocationData(async function(position) {
-        point = await getPoints(position)
+        data = await getPoints(position)
     })
 
-    const response = await getWeatherData(point)
+    const response = await getWeatherData(data)
     weather = await response.json()
     if(!weather){
         return console.log('Weather could not be obtained for this location')
@@ -75,6 +76,7 @@ async function todaysForecast() {
 function main(todaysInfo){
     const skies = todaysInfo.shortForecast
     const temp = todaysInfo.temperature
+    console.log('todays info')
     console.log(todaysInfo)
     console.log(skies)
     console.log(temp)
