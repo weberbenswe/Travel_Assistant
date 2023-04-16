@@ -6,14 +6,14 @@
                 getBrowserLocation - browser long/lat location
                 getGridPoints - gridpoints based on long/lat
 */
-const weatherPoints = 'https://api.weather.gov/'
+const weatherApiBase = 'https://api.weather.gov/'
 const userAgent = '(myweatherapp.com, contact@myweatherapp.com)'
 let weatherData = {}
 
 async function getWeatherFromGridPoints(localData){
     console.log('localData')
     console.log(localData)
-    const url = weatherPoints + 'gridpoints/' + localData.properties.cwa + '/' + localData.properties.gridX + ',' + localData.properties.gridY  + '/forecast'
+    const url = weatherApiBase + 'gridpoints/' + localData.properties.cwa + '/' + localData.properties.gridX + ',' + localData.properties.gridY  + '/forecast'
     return new Promise(async (resolve, reject) => {
         try { 
             const weatherData = await fetch(url, { headers :{ 'User-Agent' : userAgent }});
@@ -46,7 +46,7 @@ async function getGridPoints(position){
     try {
         const latitude = position.coords.latitude
         const longitude = position.coords.longitude
-        const response = await fetch(weatherPoints + 'points/' + latitude + ',' + longitude, {
+        const response = await fetch(weatherApiBase + 'points/' + latitude + ',' + longitude, {
             headers :{
                 'User-Agent' : userAgent
         }});
