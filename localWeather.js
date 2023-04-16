@@ -11,12 +11,10 @@ const userAgent = '(myweatherapp.com, contact@myweatherapp.com)'
 let weatherData = {}
 
 async function getWeatherFromGridPoints(localData){
-    console.log('localData')
-    console.log(localData)
-    const url = weatherApiBase + 'gridpoints/' + localData.properties.cwa + '/' + localData.properties.gridX + ',' + localData.properties.gridY  + '/forecast'
+    const forecastUrl = localData.properties.forecast
     return new Promise(async (resolve, reject) => {
         try { 
-            const weatherData = await fetch(url, { headers :{ 'User-Agent' : userAgent }});
+            const weatherData = await fetch(forecastUrl, { headers :{ 'User-Agent' : userAgent }});
             resolve(weatherData);
         }
         catch(error){
@@ -71,8 +69,6 @@ async function pullTodaysForecast() {
     if(!weather){
         return console.log('Weather could not be obtained for this location')
     }
-    console.log('weather')
-    console.log(weather)
     const today = weather.properties.periods[0]
     return today
 }
@@ -93,6 +89,4 @@ function main(todaysInfo){
 window.onload = async function(){
     const todaysInfo = await pullTodaysForecast()
     const today = main(todaysInfo)
-    console.log('weather Info')
-    console.log(today)
 }
