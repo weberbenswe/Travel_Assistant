@@ -1,11 +1,16 @@
 /*
-    Pull weather data
+    Pull weather data from weather.gov api
+    Based on documentation from: https://www.weather.gov/documentation/services-web-api#/
+    Api Callouts: 
+                getWeatherFromGridPoints - weather based on 2.5km gridsquares, 
+                getBrowserLocation - browser long/lat location
+                getGridPoints - gridpoints based on long/lat
 */
 const weatherPoints = 'https://api.weather.gov/'
 const userAgent = '(myweatherapp.com, contact@myweatherapp.com)'
 let weatherData = {}
 
-async function getWeatherData(localData){
+async function getWeatherFromGridPoints(localData){
     console.log('localData')
     console.log(localData)
     const url = weatherPoints + 'gridpoints/' + localData.properties.cwa + '/' + localData.properties.gridX + ',' + localData.properties.gridY  + '/forecast'
@@ -21,7 +26,7 @@ async function getWeatherData(localData){
     })
 }
 
-function getLocationData(callback) {
+function getBrowserLocation(callback) {
     return new Promise((resolve, reject) => {
         if(navigator.geolocation){
             navigator.geolocation.getCurrentPosition(async function(position) {
@@ -36,7 +41,7 @@ function getLocationData(callback) {
     })
 }
 
-async function getPoints(position){
+async function getGridPoints(position){
     console.log(position)
     try {
         const latitude = position.coords.latitude
@@ -52,16 +57,16 @@ async function getPoints(position){
         console.log(error)
     }
 }
-async function todaysForecast() {
+async function pullTodaysForecast() {
     let localData;
     let weather;
 
-    await getLocationData(async function(position) {
-        localData = await getPoints(position)
+    await getBrowserLocation(async function(position) {
+        localData = await getGridPoints(position)
     })
     weatherData.location = localData.properties.relativeLocation.properties.city
 
-    const response = await getWeatherData(localData)
+    const response = await getWeatherFromGridPoints(localData)
     weather = await response.json()
     if(!weather){
         return console.log('Weather could not be obtained for this location')
@@ -86,7 +91,7 @@ function main(todaysInfo){
 }
 
 window.onload = async function(){
-    const todaysInfo = await todaysForecast()
+    const todaysInfo = await pullTodaysForecast()
     const today = main(todaysInfo)
     console.log('weather Info')
     console.log(today)

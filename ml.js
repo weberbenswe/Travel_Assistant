@@ -7,3 +7,8 @@
     Hyperparameter Tuning: Fine-tune the hyperparameters of your model to improve its performance.
     Predict: Use your trained model to make predictions about future weather conditions. 
 */
+async function getForecast(location){
+    const response = await fetch()
+}
+
+Promise.all(locations.map(getForecast))
