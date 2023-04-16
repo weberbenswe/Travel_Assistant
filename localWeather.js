@@ -8,22 +8,14 @@
 */
 const weatherApiBase = 'https://api.weather.gov/'
 const userAgent = '(myweatherapp.com, contact@myweatherapp.com)'
+
 let weatherData = {}
 
-async function getWeatherFromGridPoints(localData){
-    const forecastUrl = localData.properties.forecast
-    return new Promise(async (resolve, reject) => {
-        try { 
-            const weatherData = await fetch(forecastUrl, { headers :{ 'User-Agent' : userAgent }});
-            resolve(weatherData);
-        }
-        catch(error){
-            console.log(error);
-            reject(error);
-        }
-    })
-}
-
+/**
+ * 
+ * @param {*} callback placeholder for callback method to find gridpoints
+ * @returns resolves into local browser position and callback to find gridpoints
+ */
 function getBrowserLocation(callback) {
     return new Promise((resolve, reject) => {
         if(navigator.geolocation){
@@ -39,6 +31,11 @@ function getBrowserLocation(callback) {
     })
 }
 
+/**
+ * 
+ * @param {*} position broswer longitude/latitude
+ * @returns grid data based on 2.5km squares required in weather callout
+ */
 async function getGridPoints(position){
     console.log(position)
     try {
@@ -55,7 +52,31 @@ async function getGridPoints(position){
         console.log(error)
     }
 }
-async function pullTodaysForecast() {
+
+/**
+ * 
+ * @param {*} localData gridPoints for weather.gov api
+ * @returns resolves into local weather response
+ */
+async function getWeatherFromGridPoints(localData){
+    const forecastUrl = localData.properties.forecast
+    return new Promise(async (resolve, reject) => {
+        try { 
+            const weatherData = await fetch(forecastUrl, { headers :{ 'User-Agent' : userAgent }});
+            resolve(weatherData);
+        }
+        catch(error){
+            console.log(error);
+            reject(error);
+        }
+    })
+}
+
+/**
+ * Driver function to pull apis and find local weather information
+ * @returns information about todays forecast
+ */
+async function main() {
     let localData;
     let weather;
 
@@ -73,7 +94,12 @@ async function pullTodaysForecast() {
     return today
 }
 
-function main(todaysInfo){
+/**
+ * 
+ * @param {*} todaysInfo sets HTML information
+ * @returns 
+ */
+function updateHTML(todaysInfo){
     const skies = todaysInfo.shortForecast
     const temp = todaysInfo.temperature
     weatherData.Skies = skies
@@ -86,7 +112,11 @@ function main(todaysInfo){
     return weatherData
 }
 
+/**
+ * onload for weather information
+ */
 window.onload = async function(){
-    const todaysInfo = await pullTodaysForecast()
-    const today = main(todaysInfo)
+    const todaysInfo = await main()
+    const today = updateHTML(todaysInfo)
+    console.log(today)
 }
